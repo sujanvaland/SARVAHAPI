@@ -35,6 +35,10 @@ namespace SpiritualNetwork.API.AppContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("dbo");
+            modelBuilder.Entity<UserChatResponse>()
+               .HasNoKey()
+               .ToTable("UserChatResponse", t => t.ExcludeFromMigrations());
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
