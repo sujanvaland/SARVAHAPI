@@ -318,7 +318,6 @@ namespace SpiritualNetwork.API.Services
                     user.PaymentRef1 = "";
                     user.PaymentRef2 = "";
                     user.Status = "";
-
                     await _userRepository.InsertAsync(user);
 
                     var qresponse = await _question.InsertAnswerAsync(user.Id, signupRequest.Answers);

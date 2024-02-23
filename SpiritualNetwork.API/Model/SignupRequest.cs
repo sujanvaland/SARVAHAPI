@@ -9,8 +9,8 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public List<AnswerModel>? Answers { get; set; }
         public string? LoginMethod { get; set; }
+        public string LoginType { get; set; }
     }
 
     public class ClaimUsernameRequest

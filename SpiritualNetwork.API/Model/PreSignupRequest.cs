@@ -9,7 +9,6 @@ namespace SpiritualNetwork.API.Model
         public string LastName { get; set; }
         public string Email { get; set; }
         public string IpAddress { get; set; }
-
-        public List<AnswerModel> Answers { get; set; }
+        public string LoginType { get; set; }
     }
 }
