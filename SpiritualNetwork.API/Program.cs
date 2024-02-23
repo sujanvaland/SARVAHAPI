@@ -84,19 +84,13 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IGlobalSettingService, GlobalSettingService>();
-builder.Services.AddScoped<IQuestion, QuestionService>();
-builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IAttachmentService, AttachmentService>();
-builder.Services.AddScoped<IReactionService,ReactionService>();
 builder.Services.AddScoped<ISubcriptionService, SubcriptionService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IChatService,ChatService>();
-builder.Services.AddScoped<IPollService, PollService>();
 builder.Services.AddScoped<IRestClient, RestClient>();
-builder.Services.AddScoped<IEventService, EventService>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

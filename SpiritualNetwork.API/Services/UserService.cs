@@ -25,7 +25,6 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<PreRegisteredUser> _preRegisteredUserRepository;
         private readonly IRepository<UserFollowers> _userFollowersRepository;
         private readonly IRepository<UserMuteBlockList> _userMuteBlockListRepository;
-        private readonly IQuestion _question;
         private readonly IRepository<OnlineUsers> _onlineUsers;
         private readonly IProfileService _profileService;
 
@@ -37,7 +36,6 @@ namespace SpiritualNetwork.API.Services
             IConfiguration configuration,
             IRepository<PasswordResetRequest> passwordResetRequestRepository,
             INotificationService notificationService, IGlobalSettingService globalSettingService,
-            IQuestion question,
             IRepository<UserFollowers> userFollowersRepository,
             IRepository<UserMuteBlockList> userMuteBlockListRepository,
             IProfileService profileService
@@ -51,7 +49,6 @@ namespace SpiritualNetwork.API.Services
             _configuration = configuration;
             _notificationService = notificationService;
             _globalSettingService = globalSettingService;
-            _question = question;
             _userFollowersRepository = userFollowersRepository;
             _userMuteBlockListRepository = userMuteBlockListRepository;
             _profileService = profileService;
@@ -319,8 +316,6 @@ namespace SpiritualNetwork.API.Services
                     user.PaymentRef2 = "";
                     user.Status = "";
                     await _userRepository.InsertAsync(user);
-
-                    var qresponse = await _question.InsertAnswerAsync(user.Id, signupRequest.Answers);
 
                     PasswordResetRequest passwordResetRequest = new PasswordResetRequest();
                     passwordResetRequest.UserId = user.Id;
