@@ -39,6 +39,19 @@ namespace SpiritualNetwork.API.Model
         public string? BackgroundImg { get; set; }
         [MaxLength(1000)]
         public string? Tags { get; set; }
+        [MaxLength(200)]
+        public string? SchoolName { get; set; }
+        [MaxLength(200)]
+        public string? BoardName { get; set; }
+        [MaxLength(200)]
+        public string? CollegeName { get; set; }
+        [MaxLength(200)]
+        public string? University { get; set; }
+        [MaxLength(200)]
+        public string? Degree { get; set; }
+        [MaxLength(200)]
+        public string? Course { get; set; }
+        public int YearOfPassing { get; set; }
     }
 
     public class UserFollowersModel

@@ -88,6 +88,7 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IAttachmentService, AttachmentService>();
 builder.Services.AddScoped<ISubcriptionService, SubcriptionService>();
+builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IChatService,ChatService>();
 builder.Services.AddScoped<IRestClient, RestClient>();
