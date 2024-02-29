@@ -22,7 +22,6 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<ChatMessages> _chatMessagesRepository;
         private readonly IRepository<OnlineUsers> _onlineUsers;
-        private readonly IRepository<UserFollowers> _userFollowers;
         private readonly IProfileService _profileService;
         private readonly AppDbContext _context;
         private readonly INotificationService _notificationService;
@@ -52,7 +51,6 @@ namespace SpiritualNetwork.API.Services
             _userRepository = userRepository;
             _context = context;
             _notificationService = notificationService;
-            _userFollowers = userFollowers;
             _profileService = profileService;
             _fileRepository = fileRepository;
             _messageGroupDetailsRepository = messageGroupDetailsRepository;

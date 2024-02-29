@@ -178,33 +178,6 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
-        [HttpGet(Name = "GetFollowers")]
-        public async Task<JsonResponse> GetFollowers(int UserId)
-        {
-            try
-            {
-                var result = await _profileService.GetFollowers(UserId);
-                return new JsonResponse(200, true, "Success", result);
-            }
-            catch (Exception ex)
-            {
-                return new JsonResponse(200, false, "Fail", ex.Message);
-            }
-        }
-
-        [HttpGet(Name = "GetConnectionsMentions")]
-        public async Task<JsonResponse> GetConnectionsMentions(int UserId)
-        {
-            try
-            {
-                var result = await _profileService.GetConnectionsMentions(UserId);
-                return new JsonResponse(200, true, "Success", result);
-            }
-            catch (Exception ex)
-            {
-                return new JsonResponse(200, false, "Fail", ex.Message);
-            }
-        }
 
         [AllowAnonymous]
         [HttpPost(Name = "UserNotification")]

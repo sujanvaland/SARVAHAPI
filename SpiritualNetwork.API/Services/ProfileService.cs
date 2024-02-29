@@ -17,7 +17,6 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<Gurus> _guruRepository;
         private readonly IRepository<Practices> _practiceRepository;
         private readonly IRepository<Experience> _experienceRepository;
-        private readonly IRepository<UserFollowers> _userFollowers;
         private readonly IRepository<OnlineUsers> _onlineUsers;
         private readonly IRepository<UserProfileSuggestion> _profilesuggestionRepo; 
         private readonly IRepository<UserSubcription> _userSubcriptionRepo;
@@ -29,7 +28,6 @@ namespace SpiritualNetwork.API.Services
             IRepository<Gurus> guruRepository, 
             IRepository<Practices> practiceRepository, 
             IRepository<Experience> experienceRepository,
-            IRepository<UserFollowers> userFollowers,
             IRepository<OnlineUsers> onlineUsers,
             IRepository<UserProfileSuggestion> profilesuggestionRepo,
             IRepository<UserSubcription> userSubcriptionRepo,
@@ -41,7 +39,6 @@ namespace SpiritualNetwork.API.Services
             _guruRepository = guruRepository;
             _practiceRepository = practiceRepository;
             _experienceRepository = experienceRepository;
-            _userFollowers = userFollowers;
             _onlineUsers = onlineUsers;
             _profilesuggestionRepo = profilesuggestionRepo;
             _userSubcriptionRepo = userSubcriptionRepo;
@@ -101,8 +98,6 @@ namespace SpiritualNetwork.API.Services
                 }
                 else { profileModel.IsPremium = false; }
                 profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
-                profileModel.NoOfFollowers = _userFollowers.Table.Where(x => x.UserId == profileModel.Id).Count();
-                profileModel.NoOfFollowing = _userFollowers.Table.Where(x => x.FollowToUserId == profileModel.Id).Count();
                 return profileModel;
             }
             catch (Exception ex)
@@ -125,8 +120,6 @@ namespace SpiritualNetwork.API.Services
                 }
                 else { profileModel.IsPremium = false; }
                 profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
-                profileModel.NoOfFollowing = _userFollowers.Table.Where(x => x.UserId == profileModel.Id).Count();
-                profileModel.NoOfFollowers = _userFollowers.Table.Where(x => x.FollowToUserId == profileModel.Id).Count();
                 return profileModel;
             }
             catch (Exception ex)
@@ -150,9 +143,6 @@ namespace SpiritualNetwork.API.Services
                 }
                 else { profileModel.IsPremium = false; }
                 profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
-                profileModel.NoOfFollowing = _userFollowers.Table.Where(x => x.UserId == profileModel.Id).Count();
-                profileModel.NoOfFollowers = _userFollowers.Table.Where(x => x.FollowToUserId == profileModel.Id).Count();
-                profileModel.IsFollowedByLoginUser = _userFollowers.Table.Where(x => x.UserId == UserId && x.FollowToUserId == profileModel.Id).Count();
                 return profileModel;
             }
             catch (Exception ex)
@@ -168,10 +158,6 @@ namespace SpiritualNetwork.API.Services
                 ProfileModel profileModel = _mapper.Map<ProfileModel>(user);
                 profileModel.IsPremium = false;
                 profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
-                profileModel.NoOfFollowing = _userFollowers.Table.Where(x => x.UserId == profileModel.Id).Count();
-                profileModel.NoOfFollowers = _userFollowers.Table.Where(x => x.FollowToUserId == profileModel.Id).Count();
-                profileModel.IsFollowedByLoginUser = _userFollowers.Table.Where(x => x.UserId == LoginUserId && x.FollowToUserId == profileModel.Id).Count();
-                profileModel.IsFollowingLoginUser = _userFollowers.Table.Where(x => x.FollowToUserId == LoginUserId && x.UserId == profileModel.Id).Count();
                 return profileModel;
             }
             catch (Exception ex)
@@ -187,8 +173,6 @@ namespace SpiritualNetwork.API.Services
                 ProfileModel profileModel = _mapper.Map<ProfileModel>(user);
                 profileModel.IsPremium = false;
                 profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
-                profileModel.NoOfFollowers = _userFollowers.Table.Where(x=>x.UserId == profileModel.Id).Count();
-                profileModel.NoOfFollowing = _userFollowers.Table.Where(x => x.FollowToUserId == profileModel.Id).Count();
                 return profileModel;
             }
             catch (Exception ex)
@@ -207,8 +191,6 @@ namespace SpiritualNetwork.API.Services
                     ProfileModel profileModel = _mapper.Map<ProfileModel>(user);
                     profileModel.IsPremium = false;
                     profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
-                    profileModel.NoOfFollowers = _userFollowers.Table.Where(x => x.UserId == profileModel.Id).Count();
-                    profileModel.NoOfFollowing = _userFollowers.Table.Where(x => x.FollowToUserId == profileModel.Id).Count();
                     profiles.Add(profileModel);
                 }
                 return profiles;
@@ -520,65 +502,6 @@ namespace SpiritualNetwork.API.Services
             {
                 throw ex;
             }
-        }
-
-        public async Task<UserFollowersModel> GetFollowers(int UserId)
-        {
-            var Following = (from uf in _userFollowers.Table
-                             join u in _userRepository.Table on uf.FollowToUserId equals u.Id
-                             where uf.UserId == UserId
-                             select u).ToList();
-            var Followers = (from uf in _userFollowers.Table
-                             join u in _userRepository.Table on uf.UserId equals u.Id
-                             where uf.FollowToUserId == UserId
-                             select u).ToList();
-            var MutualFollowers = Following.Intersect(Followers).ToList();
-
-            UserFollowersModel followersModel = new UserFollowersModel();
-            var followers = await GetUserProfile(Followers);
-            followersModel.Followers = followers;
-            var following = await GetUserProfile(Following);
-            followersModel.Following = following;
-            var mutual = await GetUserProfile(MutualFollowers);
-            followersModel.Mutual = mutual;
-
-            return followersModel;
-        }
-
-        public async Task<List<Mentions>> GetConnectionsMentions(int UserId)
-        {
-            var Following = (from uf in _userFollowers.Table
-                             join u in _userRepository.Table on uf.FollowToUserId equals u.Id
-                             where uf.UserId == UserId
-                             select u).ToList();
-            var Followers = (from uf in _userFollowers.Table
-                             join u in _userRepository.Table on uf.UserId equals u.Id
-                             where uf.FollowToUserId == UserId
-                             select u).ToList();
-            var MutualFollowers = Following.Intersect(Followers).ToList();
-
-            List<Mentions> listofMentions = new List<Mentions>();
-            var followers = await GetUserProfile(Followers);
-            foreach (var item in followers)
-            {
-                Mentions followersModel = new Mentions();
-                followersModel.name = item.FirstName + " " + item.LastName;
-                followersModel.avatar = (item.ProfileImg == null || item.ProfileImg == "") ? "https://www.k4m2a.com/images/img_userpic.jpg" : item.ProfileImg;
-                followersModel.link = "/profile/" + item.UserName;
-                followersModel.userId = item.Id;
-                listofMentions.Add(followersModel);
-            }
-            var following = await GetUserProfile(Following);
-            foreach (var item in following)
-            {
-                Mentions followersModel = new Mentions();
-                followersModel.name = item.FirstName + " " + item.LastName;
-                followersModel.avatar = (item.ProfileImg == null || item.ProfileImg == "") ? "https://www.k4m2a.com/images/img_userpic.jpg" : item.ProfileImg;
-                followersModel.link = "/profile/" + item.UserName;
-                followersModel.userId = item.Id;
-                listofMentions.Add(followersModel);
-            }
-            return listofMentions;
         }
     }
 }

@@ -13,7 +13,6 @@ namespace SpiritualNetwork.API.Services.Interface
         public Task<PreRegisteredUser> PreSignUp(PreSignupRequest req);
         public Task<JsonResponse> CheckUsername(string username);
         Task<JsonResponse> VerifyEmail(string encryptedotp, string encrypteduserid);
-        void FollowUnFollowUser(int userId, int loginUserId);
         void BlockMuteUser(int userId, int loginUserId, string type);
         public Task<User> GetUserByName(string Username);
         public Task<JsonResponse> OnlineOfflineUsers(int UserId, string? ConnectionId);

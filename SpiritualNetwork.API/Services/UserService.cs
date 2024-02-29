@@ -23,7 +23,6 @@ namespace SpiritualNetwork.API.Services
         private readonly INotificationService _notificationService;
         private readonly IGlobalSettingService _globalSettingService;
         private readonly IRepository<PreRegisteredUser> _preRegisteredUserRepository;
-        private readonly IRepository<UserFollowers> _userFollowersRepository;
         private readonly IRepository<UserMuteBlockList> _userMuteBlockListRepository;
         private readonly IRepository<OnlineUsers> _onlineUsers;
         private readonly IProfileService _profileService;
@@ -36,8 +35,6 @@ namespace SpiritualNetwork.API.Services
             IConfiguration configuration,
             IRepository<PasswordResetRequest> passwordResetRequestRepository,
             INotificationService notificationService, IGlobalSettingService globalSettingService,
-            IRepository<UserFollowers> userFollowersRepository,
-            IRepository<UserMuteBlockList> userMuteBlockListRepository,
             IProfileService profileService
             )
         {
@@ -49,8 +46,6 @@ namespace SpiritualNetwork.API.Services
             _configuration = configuration;
             _notificationService = notificationService;
             _globalSettingService = globalSettingService;
-            _userFollowersRepository = userFollowersRepository;
-            _userMuteBlockListRepository = userMuteBlockListRepository;
             _profileService = profileService;
         }
 
@@ -487,31 +482,7 @@ namespace SpiritualNetwork.API.Services
             return new JsonResponse(200, true, "Something went wrong", null);
         }
     
-        public void FollowUnFollowUser(int userId,int loginUserId)
-        {
-            var exists = _userFollowersRepository.Table.Where(x => x.UserId == loginUserId && x.FollowToUserId == userId).FirstOrDefault();
-            if (exists == null)
-            {
-                UserFollowers follower = new UserFollowers();
-                follower.UserId = loginUserId;
-                follower.FollowToUserId = userId;
-                _userFollowersRepository.Insert(follower);
-
-                NotificationRes notification = new NotificationRes();
-                notification.PostId = 0;
-                notification.ActionByUserId = loginUserId;
-                notification.ActionType = "follow";
-                notification.RefId1 = userId.ToString();
-                notification.RefId2 = "";
-                notification.Message = "";
-                _notificationService.SaveNotification(notification);
-            }
-            else
-            {
-                _userFollowersRepository.DeleteHard(exists);
-            }
-        }
-
+        
         public void BlockMuteUser(int userId, int loginUserId,string type)
         {
             var query = _userMuteBlockListRepository.Table.Where(x => x.UserId == loginUserId);
