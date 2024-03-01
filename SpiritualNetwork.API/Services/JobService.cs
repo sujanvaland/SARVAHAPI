@@ -3,6 +3,7 @@ using SpiritualNetwork.API.Model;
 using SpiritualNetwork.API.Services.Interface;
 using SpiritualNetwork.Entities;
 using SpiritualNetwork.Entities.CommonModel;
+using System.Text.Json;
 
 namespace SpiritualNetwork.API.Services
 {
@@ -107,6 +108,77 @@ namespace SpiritualNetwork.API.Services
             return apply;
         }
 
+        public async Task<JsonResponse> GetAllJobs(getJobReq req)
+        {
+            DateTime fromdate = DateTime.Today.Date, todate = DateTime.Today.Date;
+            if (req.TimePeriod == 1)
+            {
+                fromdate = DateTime.Today.Date;
+                todate = DateTime.Today.Date;
+            }
+            else if (req.TimePeriod == 2)
+            {
+                DateTime today = DateTime.Today;
+                DateTime endOfMonth = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+
+                fromdate = today;
+                todate = endOfMonth;
+            }
+            else if (req.TimePeriod == 3)
+            {
+                DateTime today = DateTime.Today;
+                DateTime firstofNextMonth = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month)).AddDays(1);
+                today = firstofNextMonth;
+                DateTime lastofNextMonth = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                fromdate = firstofNextMonth;
+                todate = lastofNextMonth;
+            }
+
+            var filterJob = _jobPostRepository.Table;
+            if (req.TimePeriod > 0)
+            {
+                filterJob = filterJob.Where(x => x.CreatedDate >= fromdate && x.CreatedDate <= todate);
+            }
+            if (req.SearchText != null)
+            {
+                filterJob = filterJob.Where(x => x.CompanyInfo.ToLower().Contains(req.SearchText.ToLower()) ||
+                                            x.RequiredQualification.ToLower().Contains(req.SearchText.ToLower()) ||
+                                            x.JobTitle.ToLower().Contains(req.SearchText.ToLower()));
+            }
+            if (req.MinSalary > 0 && req.MaxSalary > 0)
+            {
+                filterJob = filterJob.Where(x => x.MinSalary >= req.MinSalary && x.MaxSalary <= req.MaxSalary);
+            }
+
+            //if (req.Skills != null)
+            //{
+            //    string[] skillsArray = req.Skills.Split(',');
+            //    filterJob = filterJob.Where(x => x.SkillsRequired != null &&
+            //        x.SkillsRequired.Split(',').Any(skill => skillsArray.Contains(skill)));
+            //}
+
+            var query = await (from jp in filterJob
+                               join ud in _userRepository.Table on jp.CreatedBy equals ud.Id
+                               join ar in _applicationRepository.Table on jp.Id equals ar.JobId into application
+                               from ar in application.DefaultIfEmpty()
+                               select new GetAllJobsResponse
+                               {
+                                   Id = jp.Id,
+                                   JobTitle = jp.JobTitle,
+                                   CompanyName = jp.CompanyInfo,
+                                   JobDescription = jp.JobDescription,
+                                   RequiredQualification = jp.RequiredQualification,
+                                   NumberOfVacancies = jp.NoOfVaccancy,
+                                   ApplicationDeadline = jp.ApplicationDeadline,
+                                   SkillsRequired = jp.SkillsRequired,
+                                   PostedBy = ud.FirstName + " " + ud.LastName,
+                                   MinSalary = jp.MinSalary,
+                                   MaxSalary = jp.MaxSalary
+                               }).ToListAsync();
+
+
+            return new JsonResponse(200, true, "Success", query);
+        }
 
     }
 }
