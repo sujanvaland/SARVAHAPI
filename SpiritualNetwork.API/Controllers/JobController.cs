@@ -7,6 +7,8 @@ using SpiritualNetwork.Entities.CommonModel;
 
 namespace SpiritualNetwork.API.Controllers
 {
+    [Route("api/[controller]/[action]")]
+    [ApiController]
     public class JobController : ApiBaseController
     {
         private readonly IJobService _jobService;
@@ -45,11 +47,11 @@ namespace SpiritualNetwork.API.Controllers
         }
 
         [HttpPost(Name = "SaveUpdateJobPost")]
-        public async Task<JsonResponse> SaveUpdateJobPost(JobPost req)
+        public async Task<JsonResponse> SaveUpdateJobPost(JobPostReq req, int userId)
         {
             try
             {
-                var response = await _jobService.SaveUpdateJobPost(req);
+                var response = await _jobService.SaveUpdateJobPost(req, user_unique_id);
                 return new JsonResponse(200, true, "Success", response);
             }
             catch (Exception ex)

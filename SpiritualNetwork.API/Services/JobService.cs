@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SpiritualNetwork.API.Model;
 using SpiritualNetwork.API.Services.Interface;
 using SpiritualNetwork.Entities;
 using SpiritualNetwork.Entities.CommonModel;
@@ -45,18 +46,43 @@ namespace SpiritualNetwork.API.Services
             await _jobExperienceRepository.DeleteAsync(experience);
             return new JsonResponse(200, true, "Success", null);
         }
-        public async Task<JobPost> SaveUpdateJobPost(JobPost req)
+        public async Task<JobPost> SaveUpdateJobPost(JobPostReq req, int userId)
         {
-            if (req.Id == 0)
+            if (req.JobId == 0)
             {
-                await _jobPostRepository.InsertAsync(req);
+                JobPost jobPost = new JobPost();
+                jobPost.Id = 0;
+                jobPost.CreatedBy = userId;
+                jobPost.JobTitle = req.JobTitle;
+                jobPost.CompanyInfo = req.CompanyInfo;
+                jobPost.JobDescription = req.JobDescription;
+                jobPost.RequiredQualification = req.RequiredQualification;
+                jobPost.NoOfVaccancy = req.NoOfVaccancy;
+                jobPost.ApplicationDeadline = req.ApplicationDeadline;
+                jobPost.SkillsRequired = req.SkillsRequired;
+                jobPost.MinSalary = req.MinSalary;
+                jobPost.MaxSalary = req.MaxSalary;
+                await _jobPostRepository.InsertAsync(jobPost);
+
+                return jobPost;
             }
             else
             {
-                await _jobPostRepository.UpdateAsync(req);
-            }
+                var job = await _jobPostRepository.Table.Where(x => x.Id == req.JobId).FirstOrDefaultAsync();
+                job.CreatedBy = userId;
+                job.JobTitle = req.JobTitle;
+                job.CompanyInfo = req.CompanyInfo;
+                job.JobDescription = req.JobDescription;
+                job.RequiredQualification = req.RequiredQualification;
+                job.NoOfVaccancy = req.NoOfVaccancy;
+                job.ApplicationDeadline = req.ApplicationDeadline;
+                job.SkillsRequired = req.SkillsRequired;
+                job.MinSalary = req.MinSalary;
+                job.MaxSalary = req.MaxSalary;
+                await _jobPostRepository.UpdateAsync(job);
 
-            return req;
+                return job;
+            }
         }
         public async Task<JsonResponse> DeleteJobPost(int Id)
         {

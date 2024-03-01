@@ -103,7 +103,9 @@ namespace SpiritualNetwork.Entities
         public DateTime? ApplicationDeadline { get; set; }
         public int? NoOfVaccancy { get; set; }
         [MaxLength(200)]
-        public string? Skillsrequired { get; set; }
+        public string? SkillsRequired { get; set; }
+        public int? MinSalary { get; set; }
+        public int? MaxSalary { get; set; }
     }
 
     public class Application : BaseEntity
