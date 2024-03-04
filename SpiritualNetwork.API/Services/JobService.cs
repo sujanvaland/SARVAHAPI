@@ -139,7 +139,7 @@ namespace SpiritualNetwork.API.Services
             {
                 filterJob = filterJob.Where(x => x.CreatedDate >= fromdate && x.CreatedDate <= todate);
             }
-            if (req.SearchText != null)
+            if (req.SearchText != null && filterJob.Count() > 0)
             {
                 filterJob = filterJob.Where(x => x.CompanyInfo.ToLower().Contains(req.SearchText.ToLower()) ||
                                             x.RequiredQualification.ToLower().Contains(req.SearchText.ToLower()) ||
@@ -159,8 +159,6 @@ namespace SpiritualNetwork.API.Services
 
             var query = await (from jp in filterJob
                                join ud in _userRepository.Table on jp.CreatedBy equals ud.Id
-                               join ar in _applicationRepository.Table on jp.Id equals ar.JobId into application
-                               from ar in application.DefaultIfEmpty()
                                select new GetAllJobsResponse
                                {
                                    Id = jp.Id,
@@ -175,6 +173,36 @@ namespace SpiritualNetwork.API.Services
                                    MinSalary = jp.MinSalary,
                                    MaxSalary = jp.MaxSalary
                                }).ToListAsync();
+            foreach (var item in query)
+            {
+                item.ApplicationReceived = _applicationRepository.Table.Where(x => x.JobId == item.Id 
+                                            && x.IsDeleted == false).Count(); 
+            }
+
+            return new JsonResponse(200, true, "Success", query);
+        }
+
+        public async Task<JsonResponse> GetJobById(int JobId)
+        {
+            var query = await (from jp in _jobPostRepository.Table.Where(x=> x.Id == JobId && x.IsDeleted == false)
+                               join ud in _userRepository.Table on jp.CreatedBy equals ud.Id
+                               select new GetAllJobsResponse
+                               {
+                                   Id = jp.Id,
+                                   JobTitle = jp.JobTitle,
+                                   CompanyName = jp.CompanyInfo,
+                                   JobDescription = jp.JobDescription,
+                                   RequiredQualification = jp.RequiredQualification,
+                                   NumberOfVacancies = jp.NoOfVaccancy,
+                                   ApplicationDeadline = jp.ApplicationDeadline,
+                                   SkillsRequired = jp.SkillsRequired,
+                                   PostedBy = ud.FirstName + " " + ud.LastName,
+                                   MinSalary = jp.MinSalary,
+                                   MaxSalary = jp.MaxSalary
+                               }).FirstOrDefaultAsync();
+
+            query.ApplicationReceived = _applicationRepository.Table.Where(x => x.JobId == JobId
+                                            && x.IsDeleted == false).Count();
 
 
             return new JsonResponse(200, true, "Success", query);

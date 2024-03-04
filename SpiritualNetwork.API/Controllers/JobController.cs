@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SpiritualNetwork.API.Model;
 using SpiritualNetwork.API.Services;
 using SpiritualNetwork.API.Services.Interface;
@@ -47,7 +48,7 @@ namespace SpiritualNetwork.API.Controllers
         }
 
         [HttpPost(Name = "SaveUpdateJobPost")]
-        public async Task<JsonResponse> SaveUpdateJobPost(JobPostReq req, int userId)
+        public async Task<JsonResponse> SaveUpdateJobPost(JobPostReq req)
         {
             try
             {
@@ -88,13 +89,26 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
-
+        [AllowAnonymous]
         [HttpPost(Name = "GetAllJobs")]
         public async Task<JsonResponse> GetAllJobs(getJobReq req)
         {
             try
             {
                 return await _jobService.GetAllJobs(req);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
+
+        [HttpPost(Name = "GetJobById")]
+        public async Task<JsonResponse> GetJobById(getJobIdReq req)
+        {
+            try
+            {
+                return await _jobService.GetJobById(req.JobId);
             }
             catch (Exception ex)
             {

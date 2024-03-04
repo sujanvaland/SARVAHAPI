@@ -113,7 +113,6 @@ namespace SpiritualNetwork.Entities
         public int? JobId { get; set; }
         public int? ResumeId { get; set; }
         public int? CandidateId { get; set; }
-
         public DateTime? AppliedOn { get; set; }
         [MaxLength(100)]
         public string? Status { get; set; }

@@ -25,4 +25,12 @@
         public int? MaxSalary { get; set; }
 
     }
+    public class getJobIdReq
+    {
+        public int JobId { get; set; }
+
+    }
+
+
+
 }
