@@ -102,6 +102,19 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
+        [HttpPost(Name = "GetJobById")]
+        public async Task<JsonResponse> GetJobById(getJobIdReq req)
+        {
+            try
+            {
+                return await _jobService.GetJobById(req.JobId);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
+
         [HttpPost(Name = "ToggleBookmark")]
         public async Task<JsonResponse> ToggleBookmark(ReactionReq req)
         {

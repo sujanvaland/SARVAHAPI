@@ -12,6 +12,7 @@ namespace SpiritualNetwork.API.Services.Interface
         public Task<JsonResponse> DeleteJobPost(int Id);
         public Task<Application> SaveApplication(int JobId, int userId);
         public Task<JsonResponse> GetAllJobs(getJobReq req);
+        public Task<JsonResponse> GetJobById(int JobId);
         public Task<JsonResponse> ToggleBookmark(int postid, int userid);
         public Task<JsonResponse> GetAllBookmarkJobs(int userId);
 
