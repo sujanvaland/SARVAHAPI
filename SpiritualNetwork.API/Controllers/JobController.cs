@@ -74,7 +74,6 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
-
         [HttpPost(Name = "SaveApplication")]
         public async Task<JsonResponse> SaveApplication(int jobId)
         {
