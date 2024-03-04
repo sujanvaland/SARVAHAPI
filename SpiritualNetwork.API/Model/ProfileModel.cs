@@ -11,6 +11,7 @@ namespace SpiritualNetwork.API.Model
         public int NoOfFollowing { get; set; }
         public int IsFollowedByLoginUser { get; set; }
         public int? IsFollowingLoginUser { get; set; }
+        public List<JobExperience> Experience { get; set; }
     }
 
     public class ProfileReqest 
@@ -46,12 +47,52 @@ namespace SpiritualNetwork.API.Model
         [MaxLength(200)]
         public string? CollegeName { get; set; }
         [MaxLength(200)]
-        public string? University { get; set; }
-        [MaxLength(200)]
         public string? Degree { get; set; }
         [MaxLength(200)]
+        public int? YearOfPassing { get; set; }
+        public int? TotalExperience { get; set; }
+        [MaxLength(200)]
+        public string? University { get; set; }
+        [MaxLength(200)]
+        public string? HighestQualification { get; set; }
+        [MaxLength(200)]
         public string? Course { get; set; }
-        public int YearOfPassing { get; set; }
+        [MaxLength(200)]
+        public string? Specialization { get; set; }
+        public DateTime? StartingYear { get; set; }
+        public DateTime? PassingYear { get; set; }
+        [MaxLength(200)]
+        public string? Grades { get; set; }
+        public List<JobExperience> Experience { get; set; }
+
+    }
+
+    public class Education
+    {
+        public string? University { get; set; }
+        public string? Qualification { get; set; }
+        public string? Course { get; set; }
+        public string? Specialization { get; set; }
+        public DateTime? StartingYear { get; set; }
+        public DateTime? PassingYear { get; set; }
+        public int? Grades { get; set; }
+
+    }
+
+    public class Experiences
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        [MaxLength(200)]
+        public string? Company { get; set; }
+        [MaxLength(200)]
+        public string? JoinedDate { get; set; }
+        [MaxLength(200)]
+        public string? EndDate { get; set; }
+        [MaxLength(200)]
+        public string? Designation { get; set; }
+        [MaxLength(200)]
+        public string? Responsibility { get; set; }
     }
 
     public class UserFollowersModel

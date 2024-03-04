@@ -53,6 +53,8 @@ namespace SpiritualNetwork.Entities
         [MaxLength(1000)]
         public string? Tags { get; set; }
         [MaxLength(200)]
+        public int? TotalExperience { get; set; }
+
         public string? LoginMethod { get; set;}
 
         [MaxLength(100)]
@@ -60,18 +62,19 @@ namespace SpiritualNetwork.Entities
         public DateTime? ReActivationDate { get; set; }
 
         [MaxLength(200)]
-        public string? SchoolName { get; set; }
-        [MaxLength(200)]
-        public string? BoardName { get; set; }
-        [MaxLength(200)]
-        public string? CollegeName { get; set; }
-        [MaxLength(200)]
         public string? University { get; set; }
         [MaxLength(200)]
-        public string? Degree { get; set; }
+        public string? HighestQualification { get; set; }
+
         [MaxLength(200)]
         public string? Course { get; set; }
-        public int? YearOfPassing { get; set; }
+
+        [MaxLength(200)]
+        public string? Specialization { get; set; }
+        public DateTime? StartingYear { get; set; }
+        public DateTime? PassingYear { get; set; }
+        [MaxLength(200)]
+        public string? Grades { get; set; }
         public int? ResumeId { get; set; }
     }
 

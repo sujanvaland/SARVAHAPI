@@ -47,7 +47,7 @@ namespace SpiritualNetwork.API.Controllers
         }
 
         [HttpPost(Name = "SaveUpdateJobPost")]
-        public async Task<JsonResponse> SaveUpdateJobPost(JobPostReq req, int userId)
+        public async Task<JsonResponse> SaveUpdateJobPost(JobPostReq req)
         {
             try
             {
@@ -95,6 +95,32 @@ namespace SpiritualNetwork.API.Controllers
             try
             {
                 return await _jobService.GetAllJobs(req);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
+
+        [HttpPost(Name = "ToggleBookmark")]
+        public async Task<JsonResponse> ToggleBookmark(ReactionReq req)
+        {
+            try
+            {
+                return await _jobService.ToggleBookmark(req.PostId, user_unique_id);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
+
+        [HttpGet(Name = "GetAllBookmarkJobs")]
+        public async Task<JsonResponse> GetAllBookmarkJobs()
+        {
+            try
+            {
+                return await _jobService.GetAllBookmarkJobs(user_unique_id);
             }
             catch (Exception ex)
             {

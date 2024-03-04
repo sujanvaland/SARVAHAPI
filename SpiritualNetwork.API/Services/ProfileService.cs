@@ -18,7 +18,8 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<Practices> _practiceRepository;
         private readonly IRepository<Experience> _experienceRepository;
         private readonly IRepository<OnlineUsers> _onlineUsers;
-        private readonly IRepository<UserProfileSuggestion> _profilesuggestionRepo; 
+        private readonly IRepository<UserProfileSuggestion> _profilesuggestionRepo;
+        private readonly IRepository<JobExperience> _jobExperienceRepository;
         private readonly IRepository<UserSubcription> _userSubcriptionRepo;
         private readonly IMapper _mapper;
 
@@ -31,6 +32,7 @@ namespace SpiritualNetwork.API.Services
             IRepository<OnlineUsers> onlineUsers,
             IRepository<UserProfileSuggestion> profilesuggestionRepo,
             IRepository<UserSubcription> userSubcriptionRepo,
+            IRepository<JobExperience> jobExperienceRepository,
             IMapper mapper)
         {
             _userRepository = userRepository;
@@ -42,6 +44,7 @@ namespace SpiritualNetwork.API.Services
             _onlineUsers = onlineUsers;
             _profilesuggestionRepo = profilesuggestionRepo;
             _userSubcriptionRepo = userSubcriptionRepo;
+            _jobExperienceRepository = jobExperienceRepository;
             _mapper = mapper;
         }
 
@@ -66,15 +69,30 @@ namespace SpiritualNetwork.API.Services
                 profileData.ProfileImg = profileReq.ProfileImg;
                 profileData.BackgroundImg = profileReq.BackgroundImg;
                 profileData.Tags = profileReq.Tags;
-                profileData.SchoolName = profileReq.SchoolName;
-                profileData.BoardName = profileReq.BoardName;
-                profileData.CollegeName = profileReq.CollegeName;
+                profileData.TotalExperience = profileReq.TotalExperience;
                 profileData.University = profileReq.University;
-                profileData.Degree = profileReq.Degree;
+                profileData.HighestQualification = profileReq.HighestQualification;
                 profileData.Course = profileReq.Course;
-                profileData.YearOfPassing = profileReq.YearOfPassing;
+                profileData.Specialization = profileReq.Specialization;
+                profileData.StartingYear = profileReq.StartingYear;
+                profileData.PassingYear = profileReq.PassingYear;
+                profileData.Grades = profileReq.Grades;
 
                 await _userRepository.UpdateAsync(profileData);
+                
+                foreach (var item in profileReq.Experience)
+                {
+                    if (item.Id == 0)
+                    {
+                        item.UserId = UserId;
+                        await _jobExperienceRepository.InsertAsync(item);
+                    }
+                    else
+                    {
+                        await _jobExperienceRepository.UpdateAsync(item);
+                    }
+                }
+
 
                 return new JsonResponse(200, true, "Profile Updated Successfully", profileData);
 
@@ -84,6 +102,8 @@ namespace SpiritualNetwork.API.Services
                 throw ex;
             }
         }
+
+
         public async Task<ProfileModel> GetUserProfileById(int Id)
         {
             try
@@ -120,6 +140,8 @@ namespace SpiritualNetwork.API.Services
                 }
                 else { profileModel.IsPremium = false; }
                 profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
+
+                profileModel.Experience = _jobExperienceRepository.Table.Where(x=> x.UserId == profileModel.Id).ToList();
                 return profileModel;
             }
             catch (Exception ex)
