@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SpiritualNetwork.API.Model;
 using SpiritualNetwork.API.Services;
 using SpiritualNetwork.API.Services.Interface;
@@ -74,6 +73,7 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
+
         [HttpPost(Name = "SaveApplication")]
         public async Task<JsonResponse> SaveApplication(int jobId)
         {
@@ -88,7 +88,7 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
-        [AllowAnonymous]
+
         [HttpPost(Name = "GetAllJobs")]
         public async Task<JsonResponse> GetAllJobs(getJobReq req)
         {
@@ -102,12 +102,25 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
-        [HttpPost(Name = "GetJobById")]
-        public async Task<JsonResponse> GetJobById(getJobIdReq req)
+        [HttpPost(Name = "ToggleBookmark")]
+        public async Task<JsonResponse> ToggleBookmark(ReactionReq req)
         {
             try
             {
-                return await _jobService.GetJobById(req.JobId);
+                return await _jobService.ToggleBookmark(req.PostId, user_unique_id);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
+
+        [HttpGet(Name = "GetAllBookmarkJobs")]
+        public async Task<JsonResponse> GetAllBookmarkJobs()
+        {
+            try
+            {
+                return await _jobService.GetAllBookmarkJobs(user_unique_id);
             }
             catch (Exception ex)
             {

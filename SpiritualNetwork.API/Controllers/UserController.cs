@@ -14,7 +14,6 @@ namespace SpiritualNetwork.API.Controllers
     {
         private readonly ILogger<UserController> logger;
         private IUserService _userService;
-        
 
         public UserController(ILogger<UserController> logger, 
             IUserService userService)

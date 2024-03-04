@@ -28,6 +28,9 @@ namespace SpiritualNetwork.API.AppContext
         public DbSet<JobExperience> JobExperience { get; set; }
         public DbSet<JobPost> JobPost { get; set; }
         public DbSet<Application> Application { get; set; }
+        public DbSet<Reaction> Reaction { get; set; }
+
+
         public AppDbContext(IConfiguration configuration)
         {
             _configuration = configuration;

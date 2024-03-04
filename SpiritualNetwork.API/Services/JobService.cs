@@ -4,6 +4,7 @@ using SpiritualNetwork.API.Services.Interface;
 using SpiritualNetwork.Entities;
 using SpiritualNetwork.Entities.CommonModel;
 using System.Text.Json;
+using System.Threading.Tasks.Dataflow;
 
 namespace SpiritualNetwork.API.Services
 {
@@ -13,18 +14,21 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<JobExperience> _jobExperienceRepository;
         private readonly IRepository<JobPost> _jobPostRepository;
         private readonly IRepository<Application> _applicationRepository;
+        private readonly IRepository<Reaction> _reactionRepository;
 
 
 
         public JobService(IRepository<User> userRepository,
             IRepository<JobExperience> jobExperienceRepository,
             IRepository<JobPost> jobPostRepository,
-            IRepository<Application> applicationRepository)
+            IRepository<Application> applicationRepository,
+            IRepository<Reaction> reactionRepository)
         {
             _userRepository = userRepository;
             _jobExperienceRepository = jobExperienceRepository;
             _jobPostRepository = jobPostRepository;
             _applicationRepository = applicationRepository;
+            _reactionRepository = reactionRepository;
         }
 
         public async Task<JobExperience> SaveUpdateExperience(JobExperience req)
@@ -207,6 +211,64 @@ namespace SpiritualNetwork.API.Services
 
             return new JsonResponse(200, true, "Success", query);
         }
+        public async Task<JsonResponse> ToggleBookmark(int postid, int userid)
+        {
+            try
+            {
+                var data = await _reactionRepository.Table
+                    .Where(x => x.IsDeleted == false &&
+                    x.UserId == userid &&
+                    x.PostId == postid)
+                    .FirstOrDefaultAsync();
 
+                if (data != null)
+                {
+                    _reactionRepository.DeleteHard(data);
+                    return new JsonResponse(200, true, "Success", data);
+                }
+
+                Reaction reaction = new Reaction();
+                reaction.PostId = postid;
+                reaction.UserId = userid;
+                reaction.Type = "bookmark";
+
+                await _reactionRepository.InsertAsync(reaction);
+
+                return new JsonResponse(200, true, "Success", reaction);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public async Task<JsonResponse> GetAllBookmarkJobs(int userId)
+        {
+            var query = await (from r in _reactionRepository.Table.Where(x => x.UserId == userId    
+                               &&  x.Type == "bookmark" && x.IsDeleted == false)
+                               join jp in _jobPostRepository.Table on r.PostId equals jp.Id
+                               join ud in _userRepository.Table on jp.CreatedBy equals ud.Id
+                               select new GetAllJobsResponse
+                               {
+                                   Id = jp.Id,
+                                   JobTitle = jp.JobTitle,
+                                   CompanyName = jp.CompanyInfo,
+                                   JobDescription = jp.JobDescription,
+                                   RequiredQualification = jp.RequiredQualification,
+                                   NumberOfVacancies = jp.NoOfVaccancy,
+                                   ApplicationDeadline = jp.ApplicationDeadline,
+                                   SkillsRequired = jp.SkillsRequired,
+                                   PostedBy = ud.FirstName + " " + ud.LastName,
+                                   MinSalary = jp.MinSalary,
+                                   MaxSalary = jp.MaxSalary
+                               }).ToListAsync();
+
+            foreach (var job in query)
+            {
+                job.ApplicationReceived = _applicationRepository.Table.Where(x=> x.JobId == job.Id).Count();
+            }
+            return new JsonResponse(200, true, "Success", query);
+        }
     }
 }
