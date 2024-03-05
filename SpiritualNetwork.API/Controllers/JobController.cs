@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SpiritualNetwork.API.Model;
 using SpiritualNetwork.API.Services;
 using SpiritualNetwork.API.Services.Interface;
@@ -88,13 +89,13 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
-
+        [AllowAnonymous]
         [HttpPost(Name = "GetAllJobs")]
         public async Task<JsonResponse> GetAllJobs(getJobReq req)
         {
             try
             {
-                return await _jobService.GetAllJobs(req);
+                return await _jobService.GetAllJobs(req,10,8);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using SpiritualNetwork.API.AppContext;
 using SpiritualNetwork.API.Model;
 using SpiritualNetwork.API.Services.Interface;
 using SpiritualNetwork.Entities;
@@ -15,20 +17,21 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<JobPost> _jobPostRepository;
         private readonly IRepository<Application> _applicationRepository;
         private readonly IRepository<Reaction> _reactionRepository;
-
-
+        private readonly AppDbContext _context;
 
         public JobService(IRepository<User> userRepository,
             IRepository<JobExperience> jobExperienceRepository,
             IRepository<JobPost> jobPostRepository,
             IRepository<Application> applicationRepository,
-            IRepository<Reaction> reactionRepository)
+            IRepository<Reaction> reactionRepository,
+            AppDbContext context)
         {
             _userRepository = userRepository;
             _jobExperienceRepository = jobExperienceRepository;
             _jobPostRepository = jobPostRepository;
             _applicationRepository = applicationRepository;
             _reactionRepository = reactionRepository;
+            _context = context;
         }
 
         public async Task<JobExperience> SaveUpdateExperience(JobExperience req)
@@ -112,9 +115,9 @@ namespace SpiritualNetwork.API.Services
             return apply;
         }
 
-        public async Task<JsonResponse> GetAllJobs(getJobReq req)
+        public async Task<JsonResponse> GetAllJobs(getJobReq req,int size, int UserId)
         {
-            DateTime fromdate = DateTime.Today.Date, todate = DateTime.Today.Date;
+            DateTime fromdate = Convert.ToDateTime("1/1/1753"), todate = Convert.ToDateTime("1/1/1753");
             if (req.TimePeriod == 1)
             {
                 fromdate = DateTime.Today.Date;
@@ -138,21 +141,41 @@ namespace SpiritualNetwork.API.Services
                 todate = lastofNextMonth;
             }
 
-            var filterJob = _jobPostRepository.Table;
-            if (req.TimePeriod > 0)
-            {
-                filterJob = filterJob.Where(x => x.CreatedDate >= fromdate && x.CreatedDate <= todate);
-            }
-            if (req.SearchText != null && filterJob.Count() > 0)
-            {
-                filterJob = filterJob.Where(x => x.CompanyInfo.ToLower().Contains(req.SearchText.ToLower()) ||
-                                            x.RequiredQualification.ToLower().Contains(req.SearchText.ToLower()) ||
-                                            x.JobTitle.ToLower().Contains(req.SearchText.ToLower()));
-            }
-            if (req.MinSalary > 0 && req.MaxSalary > 0)
-            {
-                filterJob = filterJob.Where(x => x.MinSalary >= req.MinSalary && x.MaxSalary <= req.MaxSalary);
-            }
+            SqlParameter _FromDate = new SqlParameter("@FromDate", fromdate);
+            SqlParameter _ToDate = new SqlParameter("@ToDate", todate);
+            SqlParameter _SearchText = new SqlParameter("@SearchText", req.SearchText);
+            SqlParameter _MinSalary = new SqlParameter("@MinSalary", req.MinSalary);
+            SqlParameter _MaxSalary = new SqlParameter("@MaxSalary", req.MaxSalary);
+            SqlParameter _PageSize = new SqlParameter("@PageSize", size);
+            SqlParameter _PageNumber = new SqlParameter("@PageNumber", req.PageNo);
+            SqlParameter _userId = new SqlParameter("@userId", UserId);
+
+
+
+            var Result = await _context.GetAllJobsResponse
+                .FromSqlRaw("GetFilteredJobs  @FromDate,@ToDate,@SearchText,@MinSalary,@MaxSalary,@PageSize,@PageNumber,@userId"
+                , _FromDate, _ToDate, _SearchText, _MinSalary, _MaxSalary, _PageSize, _PageNumber, _userId)
+                .ToListAsync();
+
+
+
+            //var filterJob = _jobPostRepository.Table;
+            //if (req.TimePeriod > 0)
+            //{
+            //    filterJob = filterJob.Where(x => x.CreatedDate >= fromdate && x.CreatedDate <= todate);
+            //}
+            //if (req.SearchText != null && filterJob.Count() > 0)
+            //{
+            //    filterJob = filterJob.Where(x => x.CompanyInfo.ToLower().Contains(req.SearchText.ToLower()) ||
+            //                                x.RequiredQualification.ToLower().Contains(req.SearchText.ToLower()) ||
+            //                                x.JobTitle.ToLower().Contains(req.SearchText.ToLower()));
+            //}
+            //if (req.MinSalary > 0 && req.MaxSalary > 0)
+            //{
+            //    filterJob = filterJob.Where(x => x.MinSalary >= req.MinSalary && x.MaxSalary <= req.MaxSalary);
+            //}
+
+
 
             //if (req.Skills != null)
             //{
@@ -161,29 +184,29 @@ namespace SpiritualNetwork.API.Services
             //        x.SkillsRequired.Split(',').Any(skill => skillsArray.Contains(skill)));
             //}
 
-            var query = await (from jp in filterJob
-                               join ud in _userRepository.Table on jp.CreatedBy equals ud.Id
-                               select new GetAllJobsResponse
-                               {
-                                   Id = jp.Id,
-                                   JobTitle = jp.JobTitle,
-                                   CompanyName = jp.CompanyInfo,
-                                   JobDescription = jp.JobDescription,
-                                   RequiredQualification = jp.RequiredQualification,
-                                   NumberOfVacancies = jp.NoOfVaccancy,
-                                   ApplicationDeadline = jp.ApplicationDeadline,
-                                   SkillsRequired = jp.SkillsRequired,
-                                   PostedBy = ud.FirstName + " " + ud.LastName,
-                                   MinSalary = jp.MinSalary,
-                                   MaxSalary = jp.MaxSalary
-                               }).ToListAsync();
-            foreach (var item in query)
-            {
-                item.ApplicationReceived = _applicationRepository.Table.Where(x => x.JobId == item.Id 
-                                            && x.IsDeleted == false).Count(); 
-            }
+            //var query = await (from jp in filterJob
+            //                   join ud in _userRepository.Table on jp.CreatedBy equals ud.Id
+            //                   select new GetAllJobsResponse
+            //                   {
+            //                       Id = jp.Id,
+            //                       JobTitle = jp.JobTitle,
+            //                       CompanyName = jp.CompanyInfo,
+            //                       JobDescription = jp.JobDescription,
+            //                       RequiredQualification = jp.RequiredQualification,
+            //                       NumberOfVacancies = jp.NoOfVaccancy,
+            //                       ApplicationDeadline = jp.ApplicationDeadline,
+            //                       SkillsRequired = jp.SkillsRequired,
+            //                       PostedBy = ud.FirstName + " " + ud.LastName,
+            //                       MinSalary = jp.MinSalary,
+            //                       MaxSalary = jp.MaxSalary
+            //                   }).ToListAsync();
+            //foreach (var item in query)
+            //{
+            //    item.ApplicationReceived = _applicationRepository.Table.Where(x => x.JobId == item.Id 
+            //                                && x.IsDeleted == false).Count(); 
+            //}
 
-            return new JsonResponse(200, true, "Success", query);
+            return new JsonResponse(200, true, "Success", Result);
         }
 
         public async Task<JsonResponse> GetJobById(int JobId)
