@@ -14,6 +14,7 @@
         public int? ApplicationReceived { get; set; }
         public int? MinSalary { get; set; }
         public int? MaxSalary { get; set; }
+        public int? IsBookmarked { get; set;}
     }
 
     public class getJobReq
@@ -23,6 +24,7 @@
         public string? Skills { get; set; }
         public int? MinSalary { get; set; }
         public int? MaxSalary { get; set; }
+        public int? PageNo { get; set; }
 
     }
     public class getJobIdReq

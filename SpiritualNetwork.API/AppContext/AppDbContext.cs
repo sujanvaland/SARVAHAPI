@@ -16,6 +16,7 @@ namespace SpiritualNetwork.API.AppContext
         public DbSet<PreRegisteredUser> PreRegisteredUsers { get; set; }
         public DbSet<Entities.File> Files { get; set; }
         public DbSet<Model.TimelineModel.UserChatResponse> UserChatResponse { get; set; }
+        public DbSet<Model.GetAllJobsResponse> GetAllJobsResponse { get; set; }
         public DbSet<OnlineUsers> OnlineUsers { get; set; }
         public DbSet<Notification> Notification { get; set; }
         public DbSet<UserNotification> UserNotification { get; set; }
@@ -41,7 +42,9 @@ namespace SpiritualNetwork.API.AppContext
             modelBuilder.Entity<UserChatResponse>()
                .HasNoKey()
                .ToTable("UserChatResponse", t => t.ExcludeFromMigrations());
-
+            modelBuilder.Entity<GetAllJobsResponse>()
+                .HasNoKey()
+                .ToTable("GetAllJobsResponse", t => t.ExcludeFromMigrations());
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
