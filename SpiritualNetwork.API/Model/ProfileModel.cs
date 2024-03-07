@@ -12,6 +12,8 @@ namespace SpiritualNetwork.API.Model
         public int IsFollowedByLoginUser { get; set; }
         public int? IsFollowingLoginUser { get; set; }
         public List<JobExperience> Experience { get; set; }
+        public List<Certificate> Certificate { get; set; }
+
     }
 
     public class ProfileReqest 
@@ -64,6 +66,7 @@ namespace SpiritualNetwork.API.Model
         [MaxLength(200)]
         public string? Grades { get; set; }
         public List<JobExperience> Experience { get; set; }
+        public List<Certificate> Certificate { get; set; }
 
     }
 

@@ -33,6 +33,20 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
+        [HttpPost(Name = "SaveUpdateRecuiterProfile")]
+        public async Task<JsonResponse> SaveUpdateRecuiterProfile(Recuiter req)
+        {
+            try
+            {
+                var response = await _jobService.SaveUpdateRecuiterProfile(req);
+                return new JsonResponse(200, true, "Success", response);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
+
         [HttpPost(Name = "DeleteExperience")]
         public async Task<JsonResponse> DeleteExperience(int Id)
         {
@@ -76,11 +90,11 @@ namespace SpiritualNetwork.API.Controllers
 
 
         [HttpPost(Name = "SaveApplication")]
-        public async Task<JsonResponse> SaveApplication(int jobId)
+        public async Task<JsonResponse> SaveApplication(JobApplyReq req)
         {
             try
             {
-                var response = await _jobService.SaveApplication(jobId,user_unique_id);
+                var response = await _jobService.SaveApplication(req.JobId, user_unique_id);
                 return new JsonResponse(200, true, "Success", response);
             }
             catch (Exception ex)
@@ -89,13 +103,12 @@ namespace SpiritualNetwork.API.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost(Name = "GetAllJobs")]
         public async Task<JsonResponse> GetAllJobs(getJobReq req)
         {
             try
             {
-                return await _jobService.GetAllJobs(req,10,8);
+                return await _jobService.GetAllJobs(req,1,user_unique_id);
             }
             catch (Exception ex)
             {
@@ -108,7 +121,7 @@ namespace SpiritualNetwork.API.Controllers
         {
             try
             {
-                return await _jobService.GetJobById(req.JobId);
+                return await _jobService.GetJobById(req.JobId,user_unique_id);
             }
             catch (Exception ex)
             {

@@ -20,6 +20,7 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<OnlineUsers> _onlineUsers;
         private readonly IRepository<UserProfileSuggestion> _profilesuggestionRepo;
         private readonly IRepository<JobExperience> _jobExperienceRepository;
+        private readonly IRepository<Certificate> _certificateRepository;
         private readonly IRepository<UserSubcription> _userSubcriptionRepo;
         private readonly IMapper _mapper;
 
@@ -33,6 +34,7 @@ namespace SpiritualNetwork.API.Services
             IRepository<UserProfileSuggestion> profilesuggestionRepo,
             IRepository<UserSubcription> userSubcriptionRepo,
             IRepository<JobExperience> jobExperienceRepository,
+            IRepository<Certificate> certificateRepository,
             IMapper mapper)
         {
             _userRepository = userRepository;
@@ -45,6 +47,7 @@ namespace SpiritualNetwork.API.Services
             _profilesuggestionRepo = profilesuggestionRepo;
             _userSubcriptionRepo = userSubcriptionRepo;
             _jobExperienceRepository = jobExperienceRepository;
+            _certificateRepository = certificateRepository;
             _mapper = mapper;
         }
 
@@ -90,6 +93,19 @@ namespace SpiritualNetwork.API.Services
                     else
                     {
                         await _jobExperienceRepository.UpdateAsync(item);
+                    }
+                }
+
+                foreach (var item in profileReq.Certificate)
+                {
+                    if (item.Id == 0)
+                    {
+                        item.UserId = UserId;
+                        await _certificateRepository.InsertAsync(item);
+                    }
+                    else
+                    {
+                        await _certificateRepository.UpdateAsync(item);
                     }
                 }
 
@@ -142,6 +158,7 @@ namespace SpiritualNetwork.API.Services
                 profileModel.ConnectionDetail = _onlineUsers.GetById(user.Id);
 
                 profileModel.Experience = _jobExperienceRepository.Table.Where(x=> x.UserId == profileModel.Id).ToList();
+                profileModel.Certificate = _certificateRepository.Table.Where(x=> x.UserId == profileModel.Id).ToList();
                 return profileModel;
             }
             catch (Exception ex)

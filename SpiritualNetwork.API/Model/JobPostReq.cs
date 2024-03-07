@@ -15,4 +15,9 @@ namespace SpiritualNetwork.API.Model
         public int? MinSalary { get; set; }
         public int? MaxSalary { get; set; }
     }
+    
+    public class JobApplyReq
+    {
+        public int JobId { get; set;}
+    }
 }

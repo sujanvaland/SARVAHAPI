@@ -15,6 +15,11 @@
         public int? MinSalary { get; set; }
         public int? MaxSalary { get; set; }
         public int? IsBookmarked { get; set;}
+        public int IsApplied { get; set;}   
+        public int TotalCount { get; set; }
+        public int RowNum { get; set; }
+        public int TotalSize { get; set;}
+
     }
 
     public class getJobReq
@@ -25,6 +30,7 @@
         public int? MinSalary { get; set; }
         public int? MaxSalary { get; set; }
         public int? PageNo { get; set; }
+        public string? UserType { get; set; }
 
     }
     public class getJobIdReq

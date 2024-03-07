@@ -30,7 +30,8 @@ namespace SpiritualNetwork.API.AppContext
         public DbSet<JobPost> JobPost { get; set; }
         public DbSet<Application> Application { get; set; }
         public DbSet<Reaction> Reaction { get; set; }
-
+        public DbSet<Certificate> Certificate { get; set; }
+        public DbSet<Recuiter> Recuiter { get; set; }
 
         public AppDbContext(IConfiguration configuration)
         {
