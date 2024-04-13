@@ -154,5 +154,29 @@ namespace SpiritualNetwork.API.Controllers
                 return new JsonResponse(200, false, "Fail", ex.Message);
             }
         }
+        [HttpPost(Name = "GetAllApplications")]
+        public async Task<JsonResponse> GetAllApplications(getJobIdReq req)
+        {
+            try
+            {
+                return await _jobService.GetAllApplications(req.JobId, user_unique_id);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
+        [HttpGet(Name = "GetResume")]
+        public async Task<JsonResponse> GetResume()
+        {
+            try
+            {
+                return await _jobService.GetResume(user_unique_id);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResponse(200, false, "Fail", ex.Message);
+            }
+        }
     }
 }

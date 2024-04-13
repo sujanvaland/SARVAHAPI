@@ -19,7 +19,6 @@
         public int TotalCount { get; set; }
         public int RowNum { get; set; }
         public int TotalSize { get; set;}
-
     }
 
     public class getJobReq
@@ -39,6 +38,15 @@
 
     }
 
-
+    public class GetAllApplicationsResponse
+    {
+        public int UserId { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? UserName { get; set; }
+        public int? ResumeId { get; set; }
+        public string? ResumeUrl { get; set;}
+        public DateTime? ApplicationDate { get; set; }
+    }
 
 }

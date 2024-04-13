@@ -7,6 +7,7 @@ using SpiritualNetwork.Entities;
 using SpiritualNetwork.Entities.CommonModel;
 using System.Text.Json;
 using System.Threading.Tasks.Dataflow;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SpiritualNetwork.API.Services
 {
@@ -18,6 +19,8 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<Application> _applicationRepository;
         private readonly IRepository<Reaction> _reactionRepository;
         private readonly IRepository<Recuiter> _recuiterRepository;
+        private readonly IRepository<Entities.File> _fileRepository;
+
         private readonly AppDbContext _context;
 
         public JobService(IRepository<User> userRepository,
@@ -26,7 +29,8 @@ namespace SpiritualNetwork.API.Services
             IRepository<Application> applicationRepository,
             IRepository<Reaction> reactionRepository,
             AppDbContext context,
-            IRepository<Recuiter> recuiterRepository)
+            IRepository<Recuiter> recuiterRepository,
+            IRepository<Entities.File> fileRepository)
         {
             _userRepository = userRepository;
             _jobExperienceRepository = jobExperienceRepository;
@@ -35,6 +39,7 @@ namespace SpiritualNetwork.API.Services
             _reactionRepository = reactionRepository;
             _context = context;
             _recuiterRepository = recuiterRepository;
+            _fileRepository = fileRepository;
         }
 
         public async Task<Recuiter> SaveUpdateRecuiterProfile(Recuiter req)
@@ -258,5 +263,45 @@ namespace SpiritualNetwork.API.Services
             return new JsonResponse(200, true, "Success", query);
         }
         
+        public async Task<JsonResponse> GetAllApplications (int JobId, int UserId)
+        {
+            var check = await _jobPostRepository.Table.Where(x => x.Id == JobId
+                        && x.IsDeleted == false && x.CreatedBy == UserId).CountAsync() > 0;
+
+            if (!check)
+            {
+                return new JsonResponse(200, false, "You Are Not recruiter for this Job", null);
+            }
+
+            var ap = await _applicationRepository.Table.Where(x => x.JobId == JobId).ToListAsync();
+
+            var List = await (from jp in _applicationRepository.Table.Where(x => x.JobId == JobId && x.IsDeleted == false
+                               && x.Status == "applied")
+                               join ud in _userRepository.Table on jp.CandidateId equals ud.Id
+                               join r in _fileRepository.Table on ud.ResumeId equals r.Id
+                               where ud.IsDeleted == false 
+                               select new GetAllApplicationsResponse
+                               {
+                                   UserId = ud.Id,
+                                   FirstName = ud.FirstName,
+                                   LastName = ud.LastName,
+                                   UserName = ud.UserName,
+                                   ResumeId = ud.ResumeId,
+                                   ResumeUrl = r.ActualUrl,
+                                   ApplicationDate = jp.AppliedOn,
+                               }).ToListAsync();
+
+            return new JsonResponse(200, true, "Success", List);
+        }
+
+        public async Task<JsonResponse> GetResume(int ResumeId)
+        {
+            var query = await _fileRepository.Table.Where(x=> x.Id  == ResumeId).FirstOrDefaultAsync();
+            if (query == null)
+            {
+                return new JsonResponse(200, false, "Not Found", null);
+            }
+            return new JsonResponse(200, true, "Success", query);
+        }
     }
 }

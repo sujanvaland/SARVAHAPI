@@ -50,7 +50,7 @@ namespace SpiritualNetwork.API.Services
             }
         }
 
-        public string UploadImagesToFtp(IFormFile imgfile, string filename, string path, string ftpServerUrl = "ftp://45.114.245.207", string ftpUsername = "k4m2a.co_dv2lwekpooa", string ftpPassword = "^D$1R6mejsq9zcPf")
+        public string UploadImagesToFtp(IFormFile imgfile, string filename, string path, string ftpServerUrl = "ftp://45.114.245.207", string ftpUsername = "k4m2a.co_dv2lwekpooa", string ftpPassword = "Iry?jwu84Bhq^8Sq")
         {
             try
             {

@@ -67,6 +67,7 @@ namespace SpiritualNetwork.API.Model
         public string? Grades { get; set; }
         public List<JobExperience> Experience { get; set; }
         public List<Certificate> Certificate { get; set; }
+        public int? ResumeId { get; set; }
 
     }
 

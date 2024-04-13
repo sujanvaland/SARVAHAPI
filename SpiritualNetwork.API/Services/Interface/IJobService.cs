@@ -16,7 +16,7 @@ namespace SpiritualNetwork.API.Services.Interface
         public Task<JsonResponse> GetAllBookmarkJobs(int userId);
         public Task<JsonResponse> GetJobById(int JobId, int userId);
         public Task<Recuiter> SaveUpdateRecuiterProfile(Recuiter req);
-
-
+        public Task<JsonResponse> GetAllApplications(int UserId, int JobId);
+        public Task<JsonResponse> GetResume(int ResumeId);
     }
 }
