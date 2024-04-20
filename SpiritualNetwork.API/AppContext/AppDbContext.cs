@@ -17,6 +17,8 @@ namespace SpiritualNetwork.API.AppContext
         public DbSet<Entities.File> Files { get; set; }
         public DbSet<Model.TimelineModel.UserChatResponse> UserChatResponse { get; set; }
         public DbSet<Model.GetAllJobsResponse> GetAllJobsResponse { get; set; }
+        public DbSet<Model.GetAllCandidate> GetAllCandidate { get; set; }
+        public DbSet<Model.GetAllRecuiter> GetAllRecuiter { get; set; }
         public DbSet<OnlineUsers> OnlineUsers { get; set; }
         public DbSet<Notification> Notification { get; set; }
         public DbSet<UserNotification> UserNotification { get; set; }
@@ -48,6 +50,12 @@ namespace SpiritualNetwork.API.AppContext
             modelBuilder.Entity<GetAllJobsResponse>()
                 .HasNoKey()
                 .ToTable("GetAllJobsResponse", t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<GetAllCandidate>()
+                .HasNoKey()
+                .ToTable("GetAllCandidate", t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<GetAllRecuiter>()
+                .HasNoKey()
+                .ToTable("GetAllRecuiter", t => t.ExcludeFromMigrations());
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

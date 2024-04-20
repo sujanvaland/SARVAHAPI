@@ -30,6 +30,7 @@
         public int? MaxSalary { get; set; }
         public int? PageNo { get; set; }
         public string? UserType { get; set; }
+        public int? UserId { get; set; }
 
     }
     public class getJobIdReq

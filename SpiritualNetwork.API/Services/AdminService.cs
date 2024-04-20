@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using SpiritualNetwork.API.AppContext;
 using SpiritualNetwork.API.Services.Interface;
 using SpiritualNetwork.Entities;
@@ -36,17 +37,33 @@ namespace SpiritualNetwork.API.Services
             _fileRepository = fileRepository;
         }
 
-        //public async Task<JsonResponse> GetAllCandidate(int UserId)
-        //{
-        //    var check = await _userRepository.Table.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+        public async Task<JsonResponse> GetAllCandidate(int UserId)
+        {
+            var check = await _userRepository.Table.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
-        //    if(check.LoginType == "admin")
-        //    {
-        //        return new JsonResponse(200, false, "Only Admin Can Operate this", null);
-        //    }
+            if (check.LoginType == "jobSeeker")
+            {
+                return new JsonResponse(200, false, "Only Admin Can Operate this", null);
+            }
 
-        //    var query = await (from u in _userRepository.Table.Where(x => x.IsDeleted == false)
-        //                       join )
-        //}
+            var Result = await _context.GetAllCandidate.FromSqlRaw("GetCandidateData").ToListAsync();
+
+            return new JsonResponse(200, true, "Success", Result);
+        }
+
+        public async Task<JsonResponse> GetAllRecuiter(int UserId)
+        {
+            var check = await _userRepository.Table.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+
+            if (check.LoginType != "admin")
+            {
+                return new JsonResponse(200, false, "Only Admin Can Operate this", null);
+            }
+
+            var Result = await _context.GetAllRecuiter.FromSqlRaw("GetRecruiterData").ToListAsync();
+
+            return new JsonResponse(200, true, "Success", Result);
+        }
+
     }
 }

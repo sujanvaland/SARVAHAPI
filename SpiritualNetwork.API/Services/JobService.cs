@@ -142,7 +142,7 @@ namespace SpiritualNetwork.API.Services
 
             return apply;
         }
-        public async Task<JsonResponse> GetAllJobs(getJobReq req,int size, int UserId)
+        public async Task<JsonResponse> GetAllJobs(getJobReq req,int size)
         {
             DateTime fromdate = Convert.ToDateTime("1/1/1753"), todate = Convert.ToDateTime("1/1/1753");
             if (req.TimePeriod == 1)
@@ -175,7 +175,7 @@ namespace SpiritualNetwork.API.Services
             SqlParameter _MaxSalary = new SqlParameter("@MaxSalary", req.MaxSalary);
             SqlParameter _PageSize = new SqlParameter("@PageSize", size);
             SqlParameter _PageNumber = new SqlParameter("@PageNumber", req.PageNo);
-            SqlParameter _userId = new SqlParameter("@userId", UserId);
+            SqlParameter _userId = new SqlParameter("@userId", req.UserId);
             SqlParameter _userType = new SqlParameter("@userType", req.UserType);
 
 
@@ -276,7 +276,10 @@ namespace SpiritualNetwork.API.Services
             var check = await _jobPostRepository.Table.Where(x => x.Id == JobId
                         && x.IsDeleted == false && x.CreatedBy == UserId).CountAsync() > 0;
 
-            if (!check)
+            var admin = await _userRepository.Table.Where(x=> x.Id == UserId && x.IsDeleted == false 
+                        && x.LoginType == "admin").CountAsync() > 0;
+
+            if (!check && !admin)
             {
                 return new JsonResponse(200, false, "You Are Not recruiter for this Job", null);
             }

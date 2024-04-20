@@ -108,7 +108,8 @@ namespace SpiritualNetwork.API.Controllers
         {
             try
             {
-                return await _jobService.GetAllJobs(req,15,user_unique_id);
+                req.UserId = user_unique_id;
+                return await _jobService.GetAllJobs(req,15);
             }
             catch (Exception ex)
             {
