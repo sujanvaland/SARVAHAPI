@@ -20,7 +20,6 @@ namespace SpiritualNetwork.API.Services
         private readonly IRepository<Reaction> _reactionRepository;
         private readonly IRepository<Recuiter> _recuiterRepository;
         private readonly IRepository<Entities.File> _fileRepository;
-
         private readonly AppDbContext _context;
 
         public JobService(IRepository<User> userRepository,
@@ -77,41 +76,50 @@ namespace SpiritualNetwork.API.Services
         }
         public async Task<JobPost> SaveUpdateJobPost(JobPostReq req, int userId)
         {
-            if (req.JobId == 0)
+            try
             {
-                JobPost jobPost = new JobPost();
-                jobPost.Id = 0;
-                jobPost.CreatedBy = userId;
-                jobPost.JobTitle = req.JobTitle;
-                jobPost.CompanyInfo = req.CompanyInfo;
-                jobPost.JobDescription = req.JobDescription;
-                jobPost.RequiredQualification = req.RequiredQualification;
-                jobPost.NoOfVaccancy = req.NoOfVaccancy;
-                jobPost.ApplicationDeadline = req.ApplicationDeadline;
-                jobPost.SkillsRequired = req.SkillsRequired;
-                jobPost.MinSalary = req.MinSalary;
-                jobPost.MaxSalary = req.MaxSalary;
-                await _jobPostRepository.InsertAsync(jobPost);
+                if (req.JobId == 0)
+                {
+                    JobPost jobPost = new JobPost();
+                    jobPost.Id = 0;
+                    jobPost.CreatedBy = userId;
+                    jobPost.JobTitle = req.JobTitle;
+                    jobPost.CompanyInfo = req.CompanyInfo;
+                    jobPost.JobDescription = req.JobDescription;
+                    jobPost.RequiredQualification = req.RequiredQualification;
+                    jobPost.NoOfVaccancy = req.NoOfVaccancy;
+                    jobPost.ApplicationDeadline = req.ApplicationDeadline;
+                    jobPost.SkillsRequired = req.SkillsRequired;
+                    jobPost.MinSalary = req.MinSalary;
+                    jobPost.MaxSalary = req.MaxSalary;
+                    await _jobPostRepository.InsertAsync(jobPost);
 
-                return jobPost;
+                    return jobPost;
+                }
+                else
+                {
+                    var job = await _jobPostRepository.Table.Where(x => x.Id == req.JobId).FirstOrDefaultAsync();
+                    job.CreatedBy = userId;
+                    job.JobTitle = req.JobTitle;
+                    job.CompanyInfo = req.CompanyInfo;
+                    job.JobDescription = req.JobDescription;
+                    job.RequiredQualification = req.RequiredQualification;
+                    job.NoOfVaccancy = req.NoOfVaccancy;
+                    job.ApplicationDeadline = req.ApplicationDeadline;
+                    job.SkillsRequired = req.SkillsRequired;
+                    job.MinSalary = req.MinSalary;
+                    job.MaxSalary = req.MaxSalary;
+                    await _jobPostRepository.UpdateAsync(job);
+
+                    return job;
+                }
             }
-            else
+            catch(Exception ex) 
             {
-                var job = await _jobPostRepository.Table.Where(x => x.Id == req.JobId).FirstOrDefaultAsync();
-                job.CreatedBy = userId;
-                job.JobTitle = req.JobTitle;
-                job.CompanyInfo = req.CompanyInfo;
-                job.JobDescription = req.JobDescription;
-                job.RequiredQualification = req.RequiredQualification;
-                job.NoOfVaccancy = req.NoOfVaccancy;
-                job.ApplicationDeadline = req.ApplicationDeadline;
-                job.SkillsRequired = req.SkillsRequired;
-                job.MinSalary = req.MinSalary;
-                job.MaxSalary = req.MaxSalary;
-                await _jobPostRepository.UpdateAsync(job);
-
-                return job;
+                throw ex;
             }
+
+            
         }
         public async Task<JsonResponse> DeleteJobPost(int Id)
         {

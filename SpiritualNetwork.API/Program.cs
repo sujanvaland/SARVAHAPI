@@ -91,6 +91,8 @@ builder.Services.AddScoped<ISubcriptionService, SubcriptionService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IChatService,ChatService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IRestClient, RestClient>();
 
 

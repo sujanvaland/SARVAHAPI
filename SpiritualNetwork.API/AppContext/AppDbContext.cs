@@ -25,6 +25,8 @@ namespace SpiritualNetwork.API.AppContext
         public DbSet<GroupMember> GroupMember { get; set; }
         public DbSet<SnoozeUser> SnoozeUser { get; set; }
         public DbSet<Poll> Poll { get; set; }
+        public DbSet<ChatMessages> ChatMessages { get; set; }
+
         public DbSet<PollVote> PollVote { get; set; }
         public DbSet<JobExperience> JobExperience { get; set; }
         public DbSet<JobPost> JobPost { get; set; }

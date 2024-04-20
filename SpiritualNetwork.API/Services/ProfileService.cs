@@ -81,6 +81,7 @@ namespace SpiritualNetwork.API.Services
                 profileData.PassingYear = profileReq.PassingYear;
                 profileData.Grades = profileReq.Grades;
                 profileData.ResumeId = profileReq.ResumeId;
+                profileData.PhoneNumber = profileReq.PhoneNumber;
 
                 await _userRepository.UpdateAsync(profileData);
                 
